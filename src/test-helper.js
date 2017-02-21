@@ -4,6 +4,10 @@ const Client = require('./client.js');
 const client = new Client();
 
 class TestHelper {
+  constructor(collectionName) {
+    this.collectionName = collectionName || 'tests';
+  }
+
   setupData(data) {
     return new Promise((resolve, reject) => {
       this.connect().then(collection => {
@@ -37,7 +41,7 @@ class TestHelper {
   connect() {
     return new Promise((resolve, reject) => {
       client.connect().then(db => {
-        resolve(db.collection('tests'));
+        resolve(db.collection(this.collectionName));
       }, reject);
     });
   }
@@ -45,7 +49,7 @@ class TestHelper {
   eraseCollection() {
     return new Promise((resolve, reject) => {
       client.connect().then(db => {
-        db.collection('tests').remove();
+        db.collection(this.collectionName).remove();
         resolve();
       }, reject).catch(reject);
     });

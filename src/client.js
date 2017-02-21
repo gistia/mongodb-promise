@@ -1,6 +1,8 @@
 const client = require('mongodb').MongoClient;
 const Promise = require('es6-promise').Promise;
 
+const QueryBuilder = require('./query-builder');
+
 class Client {
   connect() {
     return new Promise((resolve, reject) => {
