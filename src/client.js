@@ -26,6 +26,17 @@ class Client {
   query(collection) {
     return new QueryBuilder(collection, this);
   }
+
+  insert(collectionName, doc) {
+    return new Promise((resolve, reject) => {
+      this.collection(collectionName).then(collection => {
+        collection.insert(doc, (err, result) => {
+          if (err) { return reject(err); }
+          resolve(result);
+        });
+      });
+    });
+  }
 }
 
 module.exports = Client;
