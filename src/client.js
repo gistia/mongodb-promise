@@ -27,6 +27,17 @@ class Client {
     return new QueryBuilder(collection, this);
   }
 
+  update(collectionName, filter, update) {
+    return new Promise((resolve, reject) => {
+      this.collection(collectionName).then(collection => {
+        collection.update(filter, update, (err, result) => {
+          if (err) { return reject(err); }
+          resolve(result);
+        });
+      });
+    });
+  }
+
   insert(collectionName, doc) {
     return new Promise((resolve, reject) => {
       this.collection(collectionName).then(collection => {
