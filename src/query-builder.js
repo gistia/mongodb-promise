@@ -1,4 +1,5 @@
-const Promise = require('es6-promise').Promise;
+const { Promise } = require('es6-promise');
+const { ObjectID } = require('mongodb');
 
 class QueryBuilder {
   constructor(name, client) {
@@ -27,6 +28,9 @@ class QueryBuilder {
         let query = collection;
 
         if (this.findQuery) {
+          if (this.findQuery._id) {
+            this.findQuery._id = new ObjectID(this.findQuery._id);
+          }
           query = query.find(this.findQuery);
         }
 
