@@ -5,6 +5,10 @@ const QueryBuilder = require('./query-builder');
 
 class Client {
   connect() {
+    if (this.connection) {
+      return Promise.resolve(this.connection);
+    }
+
     return new Promise((resolve, reject) => {
       client.connect(process.env.MONGODB_URL, (err, db) => {
         if (err) {
@@ -12,6 +16,7 @@ class Client {
           return;
         }
 
+        this.connection = db;
         resolve(db);
       });
     });
