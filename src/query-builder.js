@@ -29,7 +29,11 @@ class QueryBuilder {
 
         if (this.findQuery) {
           if (this.findQuery._id) {
-            this.findQuery._id = new ObjectID(this.findQuery._id);
+            try {
+              this.findQuery._id = new ObjectID(this.findQuery._id);
+            } catch (e) {
+              console.warn(`Error converting ${this.findQuery._id} to ObjectID`);
+            }
           }
           query = query.find(this.findQuery);
         }
@@ -46,7 +50,7 @@ class QueryBuilder {
           if (err) { return reject(err); }
           resolve(docs);
         });
-      });
+      }, reject).catch(reject);
     });
   }
 }
