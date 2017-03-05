@@ -11,7 +11,7 @@ class TestHelper {
   setupData(data) {
     return new Promise((resolve, reject) => {
       this.connect().then(collection => {
-        collection.insertMany(data, (err, doc) => {
+        collection.insert(data, (err, doc) => {
           if (err) {
             reject(err);
             return;
