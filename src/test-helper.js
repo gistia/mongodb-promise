@@ -49,8 +49,9 @@ class TestHelper {
   eraseCollection() {
     return new Promise((resolve, reject) => {
       client.connect().then(db => {
-        db.collection(this.collectionName).remove();
-        resolve();
+        db.collection(this.collectionName).remove().then(_ => {
+          resolve();
+        });
       }, reject).catch(reject);
     });
   }
