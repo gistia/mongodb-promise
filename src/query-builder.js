@@ -22,28 +22,38 @@ class QueryBuilder {
     return this;
   }
 
+  aggregate(aggregations) {
+    this.aggregations = aggregations;
+    return this;
+  }
+
   execute() {
     return new Promise((resolve, reject) => {
       this.client.collection(this.name).then(collection => {
-        let query = collection;
+        let query;
 
-        if (this.findQuery) {
-          if (this.findQuery._id) {
-            try {
-              this.findQuery._id = new ObjectID(this.findQuery._id);
-            } catch (e) {
-              console.warn(`Error converting ${this.findQuery._id} to ObjectID`);
+        if (this.aggregations) {
+          query = collection.aggregate(this.aggregations);
+        } else {
+          query = collection;
+          if (this.findQuery) {
+            if (this.findQuery._id) {
+              try {
+                this.findQuery._id = new ObjectID(this.findQuery._id);
+              } catch (e) {
+                console.warn(`Error converting ${this.findQuery._id} to ObjectID`);
+              }
             }
+            query = query.find(this.findQuery);
           }
-          query = query.find(this.findQuery);
-        }
 
-        if (this.sortKey) {
-          query = query.sort(this.sortKey);
-        }
+          if (this.sortKey) {
+            query = query.sort(this.sortKey);
+          }
 
-        if (this.limitValue) {
-          query = query.limit(this.limitValue);
+          if (this.limitValue) {
+            query = query.limit(this.limitValue);
+          }
         }
 
         query.toArray((err, docs) => {
