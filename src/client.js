@@ -59,6 +59,17 @@ class Client {
       });
     });
   }
+
+  remove(collectionName, filter) {
+    return new Promise((resolve, reject) => {
+      this.collection(collectionName).then(collection => {
+        collection.deleteMany(filter, (err, result) => {
+          if (err) { return reject(err); }
+          resolve(result);
+        });
+      });
+    });
+  }
 }
 
 module.exports = Client;
