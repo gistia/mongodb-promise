@@ -18,7 +18,12 @@ class QueryBuilder {
   }
 
   limit(value) {
-    this.limitValue = value;
+    this.limitValue = parseInt(value, 10);
+    return this;
+  }
+
+  skip(skip) {
+    this.skipValue = parseInt(skip, 10);
     return this;
   }
 
@@ -53,6 +58,10 @@ class QueryBuilder {
 
           if (this.limitValue) {
             query = query.limit(this.limitValue);
+          }
+
+          if (this.skipValue) {
+            query = query.skip(this.skipValue);
           }
         }
 
