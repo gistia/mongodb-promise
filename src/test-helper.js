@@ -1,4 +1,3 @@
-const Promise = require('es6-promise').Promise;
 const Client = require('./client.js');
 
 const client = new Client();

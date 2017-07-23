@@ -1,4 +1,3 @@
-const { Promise } = require('es6-promise');
 const { ObjectID } = require('mongodb');
 
 class QueryBuilder {

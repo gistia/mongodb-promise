@@ -1,5 +1,4 @@
 const client = require('mongodb').MongoClient;
-const Promise = require('es6-promise').Promise;
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
