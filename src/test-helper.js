@@ -1,10 +1,9 @@
-const Client = require('./client.js');
-
-const client = new Client();
+const Client = require('./client');
 
 class TestHelper {
-  constructor(collectionName) {
+  constructor(collectionName, mongoUrl) {
     this.collectionName = collectionName || 'tests';
+    this.client = new Client(mongoUrl);
   }
 
   setupData(data) {
@@ -39,7 +38,7 @@ class TestHelper {
 
   connect() {
     return new Promise((resolve, reject) => {
-      client.connect().then(db => {
+      this.client.connect().then(db => {
         resolve(db.collection(this.collectionName));
       }, reject);
     });
@@ -47,7 +46,7 @@ class TestHelper {
 
   eraseCollection() {
     return new Promise((resolve, reject) => {
-      client.connect().then(db => {
+      this.client.connect().then(db => {
         db.collection(this.collectionName).remove().then(_ => {
           resolve();
         });
