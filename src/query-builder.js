@@ -31,6 +31,11 @@ class QueryBuilder {
     return this;
   }
 
+  count() {
+    this.hasCount = true;
+    return this;
+  }
+
   execute() {
     return new Promise((resolve, reject) => {
       this.client.collection(this.name).then(collection => {
@@ -64,7 +69,9 @@ class QueryBuilder {
           }
         }
 
-        query.toArray((err, docs) => {
+        const method = this.hasCount ? query.count.bind(query) : query.toArray.bind(query);
+
+        method((err, docs) => {
           if (err) { return reject(err); }
           resolve(docs);
         });
