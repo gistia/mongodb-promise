@@ -38,7 +38,7 @@ class QueryBuilder {
 
   execute() {
     return new Promise((resolve, reject) => {
-      this.client.collection(this.name).then(collection => {
+      return this.client.withCollection(this.name).then(({ conn, collection }) => {
         let query;
 
         if (this.aggregations) {
@@ -72,6 +72,7 @@ class QueryBuilder {
         const method = this.hasCount ? query.count.bind(query) : query.toArray.bind(query);
 
         method((err, docs) => {
+          conn.close();
           if (err) { return reject(err); }
           resolve(docs);
         });
