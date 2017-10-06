@@ -9,16 +9,7 @@ class Client {
   }
 
   connect() {
-    return new Promise((resolve, reject) => {
-      client.connect(this.url, (err, db) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve(db);
-      });
-    });
+    return Promise.promisify(client.connect.bind(client))(this.url);
   }
 
   collection(conn, name) {
@@ -29,45 +20,49 @@ class Client {
     return new QueryBuilder(collection, this);
   }
 
-  update(collectionName, filter, update) {
-    fixId(filter);
+  withCollection(name) {
     return new Promise((resolve, reject) => {
-      this.connect().then(conn => {
-        this.collection(conn, collectionName).then(collection => {
-          collection.update(filter, update, (err, result) => {
-            conn.close();
-            if (err) { return reject(err); }
-            resolve(result);
-          });
+      return this.connect().then(conn => {
+        return this.collection(conn, name).then(collection => {
+          resolve({ conn, collection });
         }, reject).catch(reject);
+      }, reject).catch(reject);
+    });
+  }
+
+  update(collectionName, filter, update) {
+    return new Promise((resolve, reject) => {
+      fixId(filter);
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.update(filter, update, (err, result) => {
+          conn.close();
+          if (err) { return reject(err); }
+          resolve(result);
+        });
       }, reject).catch(reject);
     });
   }
 
   insert(collectionName, doc) {
     return new Promise((resolve, reject) => {
-      this.connect().then(conn => {
-        this.collection(conn, collectionName).then(collection => {
-          collection.insert(doc, (err, result) => {
-            conn.close();
-            if (err) { return reject(err); }
-            resolve(result);
-          });
-        }, reject).catch(reject);
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.insert(doc, (err, result) => {
+          conn.close();
+          if (err) { return reject(err); }
+          resolve(result);
+        });
       }, reject).catch(reject);
     });
   }
 
   remove(collectionName, filter) {
     return new Promise((resolve, reject) => {
-      this.connect().then(conn => {
-        this.collection(conn, collectionName).then(collection => {
-          collection.deleteMany(filter, (err, result) => {
-            conn.close();
-            if (err) { return reject(err); }
-            resolve(result);
-          });
-        }, reject).catch(reject);
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.deleteMany(filter, (err, result) => {
+          conn.close();
+          if (err) { return reject(err); }
+          resolve(result);
+        });
       }, reject).catch(reject);
     });
   }
