@@ -8,39 +8,25 @@ class TestHelper {
 
   setupData(data) {
     return new Promise((resolve, reject) => {
-      this.connect().then(collection => {
+      this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
         collection.insert(data, (err, doc) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-
+          conn.close();
+          if (err) { return reject(err); }
           resolve(doc);
         });
-      });
+      }, reject).catch(reject);
     });
   }
 
   retrieveData() {
     return new Promise((resolve, reject) => {
-      this.connect().then(collection => {
+      this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
         collection.find({}).toArray((err, docs) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-
+          conn.close();
+          if (err) { return reject(err); }
           resolve(docs);
         });
-      });
-    });
-  }
-
-  connect() {
-    return new Promise((resolve, reject) => {
-      this.client.connect().then(db => {
-        resolve(db.collection(this.collectionName));
-      }, reject);
+      }, reject).catch(reject);
     });
   }
 
@@ -48,6 +34,7 @@ class TestHelper {
     return new Promise((resolve, reject) => {
       this.client.connect().then(db => {
         db.collection(this.collectionName).remove().then(_ => {
+          db.close();
           resolve();
         });
       }, reject).catch(reject);
