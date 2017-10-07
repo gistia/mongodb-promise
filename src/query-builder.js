@@ -72,7 +72,7 @@ class QueryBuilder {
         const method = this.hasCount ? query.count.bind(query) : query.toArray.bind(query);
 
         method((err, docs) => {
-          conn.close();
+          // conn.close();
           if (err) { return reject(err); }
           resolve(docs);
         });

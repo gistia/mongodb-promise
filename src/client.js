@@ -8,8 +8,18 @@ class Client {
     this.url = url || process.env.MONGODB_URL;
   }
 
+  init() {
+    return new Promise((resolve, reject) => {
+      client.connect(this.url).then(connection => {
+        this.connection = connection;
+        resolve(connection);
+      }).catch(reject);
+    });
+  }
+
   connect() {
-    return Promise.promisify(client.connect.bind(client))(this.url);
+    global.logger = global.logger || console;
+    return Promise.resolve(this.connection);
   }
 
   collection(conn, name) {
@@ -35,7 +45,7 @@ class Client {
       fixId(filter);
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.update(filter, update, (err, result) => {
-          conn.close();
+          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
@@ -47,7 +57,7 @@ class Client {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.insert(doc, (err, result) => {
-          conn.close();
+          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
@@ -59,7 +69,7 @@ class Client {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.deleteMany(filter, (err, result) => {
-          conn.close();
+          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
