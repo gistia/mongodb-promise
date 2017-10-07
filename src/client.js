@@ -18,7 +18,6 @@ class Client {
   }
 
   connect() {
-    global.logger = global.logger || console;
     return Promise.resolve(this.connection);
   }
 
@@ -45,7 +44,6 @@ class Client {
       fixId(filter);
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.update(filter, update, (err, result) => {
-          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
@@ -57,7 +55,6 @@ class Client {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.insert(doc, (err, result) => {
-          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
@@ -69,7 +66,6 @@ class Client {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
         collection.deleteMany(filter, (err, result) => {
-          // conn.close();
           if (err) { return reject(err); }
           resolve(result);
         });
