@@ -10,7 +10,7 @@ class TestHelper {
     return new Promise((resolve, reject) => {
       this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
         collection.insert(data, (err, doc) => {
-          conn.close();
+          this.client.close(conn);
           if (err) { return reject(err); }
           resolve(doc);
         });
@@ -22,7 +22,7 @@ class TestHelper {
     return new Promise((resolve, reject) => {
       this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
         collection.find({}).toArray((err, docs) => {
-          conn.close();
+          this.client.close(conn);
           if (err) { return reject(err); }
           resolve(docs);
         });
@@ -34,7 +34,7 @@ class TestHelper {
     return new Promise((resolve, reject) => {
       this.client.connect().then(db => {
         db.collection(this.collectionName).remove().then(_ => {
-          db.close();
+          this.client.close(db);
           resolve();
         });
       }, reject).catch(reject);
