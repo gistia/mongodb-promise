@@ -16,28 +16,14 @@ class Client {
 
   connect() {
     if (this.pool) {
-      return new Promise((resolve, reject) => {
-        this.pool.acquire().then(conn => {
-          if (!conn.serverConfig.isConnected()) {
-            return conn.open().then(conn => {
-              this.pool.info(`ACQ-${this.num}`);
-              return resolve(conn);
-            }, reject).catch(reject);
-          }
-
-          this.pool.info(`ACQ-${this.num}`);
-          return resolve(conn);
-        }, reject).catch(reject);
-      });
+      return this.pool.acquire();
     }
     return this.performConnect();
   }
 
   close(conn) {
     if (this.pool) {
-      const rel = this.pool.release(conn);
-      this.pool.info(`REL-${this.num}`);
-      return rel;
+      return this.pool.release(conn);
     }
     return this.performClose(conn);
   }

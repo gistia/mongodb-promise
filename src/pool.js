@@ -32,6 +32,7 @@ class ConnectionPool {
       'avail:', this.pool.available,
       'borwd:', this.pool.borrowed,
       'pendg:', this.pool.pending,
+      'size:', this.pool.size,
     );
   }
 
