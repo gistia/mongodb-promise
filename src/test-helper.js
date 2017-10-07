@@ -1,9 +1,16 @@
+const _ = require('lodash');
+
 const Client = require('./client');
 
 class TestHelper {
-  constructor(collectionName, mongoUrl) {
+  constructor(collectionName, urlOrOptions) {
     this.collectionName = collectionName || 'tests';
-    this.client = new Client(mongoUrl);
+    if (_.isObject(urlOrOptions)) {
+      const { url, poolSize } = urlOrOptions;
+      this.client = new Client(url, { url, poolSize });
+    } else {
+      this.client = new Client(urlOrOptions, { poolSize: 2 });
+    }
   }
 
   setupData(data) {

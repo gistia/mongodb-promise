@@ -6,16 +6,18 @@ const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
 
 class Client {
-  constructor(url, usePool=true) {
+  constructor(url, { usePool=true, poolSize }={}) {
     this.url = url || process.env.MONGODB_URL;
     this.num = uuid().split('-')[0];
+    this.count = 0;
     if (usePool) {
-      this.pool = new ConnectionPool(this);
+      this.pool = new ConnectionPool(this, { max: poolSize });
     }
   }
 
   connect() {
     if (this.pool) {
+      this.pool.info(`ACQ-${this.num}`);
       return this.pool.acquire();
     }
     return this.performConnect();
@@ -23,16 +25,28 @@ class Client {
 
   close(conn) {
     if (this.pool) {
+      this.pool.info(`REL-${this.num}`);
       return this.pool.release(conn);
     }
     return this.performClose(conn);
   }
 
   performConnect() {
-    return Promise.promisify(client.connect.bind(client))(this.url);
+    return new Promise((resolve, reject) => {
+      const start = new Date().getTime();
+      client.connect(this.url, { poolSize: 1 }).then(conn => {
+        const elapsed = new Date().getTime() - start;
+        this.count++;
+        this.pool.info(`CON-${this.num}`);
+        console.log('this.count', this.count, elapsed);
+        resolve(conn);
+      }, reject).bind(reject);
+    });
+    // return Promise.promisify(client.connect.bind(client))(this.url);
   }
 
   performClose(conn) {
+    this.pool.info(`CLS-${this.num}`);
     return Promise.promisify(conn.close)();
   }
 

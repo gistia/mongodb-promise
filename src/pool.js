@@ -1,4 +1,5 @@
 const GenericPool = require('generic-pool');
+const uuid = require('uuid/v1');
 
 const getInt = (str, defaultValue) => {
   if (!str) {
@@ -14,9 +15,10 @@ const getInt = (str, defaultValue) => {
 
 class ConnectionPool {
   constructor(client, {
-    max=getInt(process.env.MONGODB_POOL_MAX, 10),
+    max=getInt(process.env.MONGODB_POOL_MAX, 5),
     min=getInt(process.env.MONGODB_POOL_MIN, 0),
   }={}) {
+    this.num = uuid().split('-')[0];
     this.client = client;
     this.max = max;
     this.min = min;
@@ -27,7 +29,7 @@ class ConnectionPool {
   }
 
   info(oper) {
-    console.log(`[${oper}]`,
+    logger.error(`[${this.num}-${oper}]`,
       'capac:', this.pool.spareResourceCapacity,
       'avail:', this.pool.available,
       'borwd:', this.pool.borrowed,
