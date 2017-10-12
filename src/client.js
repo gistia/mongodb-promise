@@ -9,8 +9,13 @@ class Client {
   }
 
   init() {
+    const opts = {};
+    if (process.env.MONGODB_POOL_SIZE) {
+      opts.poolSize = parseInt(process.env.MONGODB_POOL_SIZE, 10);
+    }
+
     return new Promise((resolve, reject) => {
-      client.connect(this.url).then(connection => {
+      client.connect(this.url, opts).then(connection => {
         this.connection = connection;
         resolve(connection);
       }).catch(reject);
