@@ -77,6 +77,10 @@ class Client {
       }, reject).catch(reject);
     });
   }
+
+  toJSON() {
+    return { url: this.url };
+  }
 }
 
 module.exports = Client;
