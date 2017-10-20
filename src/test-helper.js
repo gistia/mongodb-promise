@@ -1,4 +1,6 @@
+const { ObjectID } = require('mongodb');
 const Client = require('./client');
+const traverse = require('traverse');
 
 class TestHelper {
   constructor(collectionName, mongoUrl) {
@@ -11,6 +13,15 @@ class TestHelper {
   }
 
   setupData(data) {
+    data = data.map(doc => {
+      traverse(doc).forEach(function(val) {
+        if (this.key === '_id') {
+          this.update(ObjectID(val));
+        }
+      });
+      return doc;
+    })
+
     return new Promise((resolve, reject) => {
       this.init().then(_ => {
         this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
