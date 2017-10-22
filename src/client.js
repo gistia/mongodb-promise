@@ -44,11 +44,11 @@ class Client {
     });
   }
 
-  update(collectionName, filter, update) {
+  update(collectionName, filter, update, options={}) {
     return new Promise((resolve, reject) => {
       fixId(filter);
       this.withCollection(collectionName).then(({ conn, collection }) => {
-        collection.update(filter, update, (err, result) => {
+        collection.update(filter, update, options, (err, result) => {
           if (err) { return reject(err); }
           resolve(result);
         });

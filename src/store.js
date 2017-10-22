@@ -14,6 +14,10 @@ class Store {
     return this.client.update(this.collection, { _id: id }, { $set: json });
   }
 
+  updateOrInsert(query, json) {
+    return this.client.update(this.collection, query, json, { upsert: true });
+  }
+
   aggregateWithPagination(aggregations, pagination) {
     return new Promise((resolve, reject) => {
       const resultPipe = pagination ? aggregations.concat({
