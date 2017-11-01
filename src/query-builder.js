@@ -1,4 +1,5 @@
 const { ObjectID } = require('mongodb');
+const Promise = require('bluebird');
 
 class QueryBuilder {
   constructor(name, client) {

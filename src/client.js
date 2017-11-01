@@ -1,4 +1,5 @@
 const client = require('mongodb').MongoClient;
+const Promise = require('bluebird');
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');

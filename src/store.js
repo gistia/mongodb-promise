@@ -1,3 +1,5 @@
+const Promise = require('bluebird');
+
 class Store {
   constructor(client, collection) {
     this.client = client;

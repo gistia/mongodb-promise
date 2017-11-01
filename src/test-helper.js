@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const Client = require('./client');
 const traverse = require('traverse');
+const Promise = require('bluebird');
 
 class TestHelper {
   constructor(collectionName, mongoUrl) {

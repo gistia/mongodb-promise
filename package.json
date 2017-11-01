@@ -21,6 +21,7 @@
     "sinon": "1.17.7"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "mongodb": "2.2.24",
     "traverse": "0.6.6"
   }
