@@ -68,13 +68,10 @@ class QueryBuilder {
 
           query = collection.aggregate(aggregations);
 
-          console.log('*** after aggregations', JSON.stringify(aggregations));
-
           return query.toArray((err, docs) => {
             if (err) { return reject(err); }
             if (this.hasCount) {
               const count = docs.length ? docs[0].count : 0;
-              console.log('*** count', count);
               resolve(count);
             }
             resolve(docs);
