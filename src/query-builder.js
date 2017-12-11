@@ -9,12 +9,12 @@ class QueryBuilder {
   }
 
   find(query) {
-    this.findQuery = query;
+    this.findQuery = _.cloneDeep(query);
     return this;
   }
 
   sort(key) {
-    this.sortKey = key;
+    this.sortKey = _.cloneDeep(key);
     return this;
   }
 
@@ -29,7 +29,7 @@ class QueryBuilder {
   }
 
   aggregate(aggregations) {
-    this.aggregations = aggregations;
+    this.aggregations = _.cloneDeep(aggregations);
     return this;
   }
 
@@ -46,24 +46,24 @@ class QueryBuilder {
         if (this.aggregations) {
           const aggregations = this.aggregations;
 
-          if (this.skipValue) {
-            aggregations.push( { $skip: this.skipValue });
-          }
-
-          if (this.limitValue) {
-            aggregations.push( { $limit: this.limitValue });
+          if (!_.isEmpty(this.findQuery)) {
+            aggregations.push({ $match: this.findQuery })
           }
 
           if (!_.isEmpty(this.sortKey)) {
             aggregations.push({ $sort: this.sortKey });
           }
 
-          if (this.hasCount) {
+          if(this.hasCount) {
             aggregations.push({ $count: 'count' });
-          }
+          } else {
+            if (this.skipValue) {
+              aggregations.push( { $skip: this.skipValue });
+            }
 
-          if (this.findQuery) {
-            aggregations.push({ $match: this.findQuery })
+            if (this.limitValue) {
+              aggregations.push( { $limit: this.limitValue });
+            }
           }
 
           query = collection.aggregate(aggregations);
