@@ -33,6 +33,11 @@ class QueryBuilder {
     return this;
   }
 
+  fields(fields) {
+    this.fields = _.cloneDeep(fields);
+    return this;
+  }
+
   count() {
     this.hasCount = true;
     return this;
@@ -87,6 +92,10 @@ class QueryBuilder {
               }
             }
             query = query.find(this.findQuery);
+          }
+
+          if (this.fields) {
+            query = query.project(this.fields);
           }
 
           if (this.sortKey) {
