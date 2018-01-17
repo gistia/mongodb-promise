@@ -1,5 +1,6 @@
 const client = require('mongodb').MongoClient;
 const Promise = require('bluebird');
+const promiseRetry = require('promise-retry');
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
@@ -16,7 +17,16 @@ class Client {
     }
 
     return new Promise((resolve, reject) => {
-      client.connect(this.url, opts).then(connection => {
+      promiseRetry((retry, number) => {
+        if (number && number > 1) {
+          logger.info('Attempt %s to connect to MongoDB - %s', number, this.url);
+        }
+
+        return client.connect(this.url, opts).catch(err => {
+          logger.error('Error on attempt %s to connect', number, err);
+          retry(err);
+        });
+      }).then(connection => {
         this.connection = connection;
         resolve(connection);
       }).catch(reject);
