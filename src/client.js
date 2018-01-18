@@ -16,6 +16,10 @@ class Client {
       opts.poolSize = parseInt(process.env.MONGODB_POOL_SIZE, 10);
     }
 
+    const retryOptions = {
+      retries: process.env.MONGODB_MAX_RETRIES || 10,
+    };
+
     return new Promise((resolve, reject) => {
       promiseRetry((retry, number) => {
         if (number && number > 1) {
@@ -26,7 +30,7 @@ class Client {
           logger.error('Error on attempt %s to connect', number, err);
           retry(err);
         });
-      }).then(connection => {
+      }, retryOptions).then(connection => {
         this.connection = connection;
         resolve(connection);
       }).catch(reject);
