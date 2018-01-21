@@ -20,13 +20,18 @@ const ping = (conn) => {
   });
 };
 
-const attempts = process.argv.length > 2 ? process.argv[2] : 100;
+const attempts = parseInt(process.argv.length > 2 ? process.argv[2] : 100, 10);
 const client = new Client();
 client.init().then(conn => {
   const promises = Promise.all([...Array(attempts)].map((_val, _idx) => ping(conn)));
+  const start = new Date().getTime();
   promises.then(res => {
+    const elapsed = new Date().getTime() - start;
     console.log('finished', attempts, 'attempts');
     const total = res.reduce((time, res) => time += res, 0);
+    console.log('attempts', res.length);
+    console.log('real time', elapsed, 'ms');
+    console.log('real avg', (elapsed / res.length), 'ms');
     console.log('total', total, 'ms');
     console.log('avg', total / res.length, 'ms');
   }).then(_ => {
