@@ -32,13 +32,30 @@ class Client {
         });
       }, retryOptions).then(connection => {
         this.connection = connection;
+        this.connection.on('close', this.connectionClosed.bind(this));
         resolve(connection);
       }).catch(reject);
     });
   }
 
+  connectionClosed() {
+    this.connection = null;
+  }
+
   connect() {
-    return Promise.resolve(this.connection);
+    if (!this.connection) {
+      return this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      this.connection.command({ ping: 1 }, (err) => {
+        if (err) {
+          logger.info('reconnecting after ping failed with error - %s', err, err);
+          return this.init().then(conn => resolve(conn)).catch(err => reject(err));
+        }
+        resolve(this.connection);
+      });
+    });
   }
 
   collection(conn, name) {
