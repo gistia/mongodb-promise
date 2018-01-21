@@ -6,6 +6,9 @@
   "repository": "https://github.com/gistia/mongodb-promise",
   "author": "Felipe Coury <felipe.coury@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "mping": "./bin/ping.js"
+  },
   "devDependencies": {
     "chai": "3.5.0",
     "chai-http": "3.0.0",
