@@ -110,6 +110,17 @@ class Client {
     });
   }
 
+  mapReduce(collectionName, map, reduce, filter, collectionOut) {
+    return new Promise((resolve, reject) => {
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.mapReduce(map, reduce, { query: filter, out: collectionOut }, (err, result) => {
+          if (err) { return reject(err); }
+          resolve(result);
+        });
+      }, reject).catch(reject);
+    });
+  }
+
   toJSON() {
     return { url: this.url };
   }
