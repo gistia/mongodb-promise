@@ -16,7 +16,7 @@ class TestHelper {
   setupData(data) {
     data = data.map(doc => {
       traverse(doc).forEach(function(val) {
-        if (this.key === '_id') {
+        if (this.key === '_id'  && val.length === 12) {
           this.update(ObjectID(val));
         }
       });
