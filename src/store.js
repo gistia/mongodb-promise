@@ -13,7 +13,9 @@ class Store {
   }
 
   update(id, json) {
-    return this.client.update(this.collection, { _id: id }, { $set: json });
+    const isMulti = Array.isArray(id);
+    const filterId = isMulti ? { $in: id } : id;
+    return this.client.update(this.collection, { _id: filterId }, { $set: json }, { multi: isMulti });
   }
 
   updateOrInsert(query, json) {
