@@ -43,6 +43,11 @@ class QueryBuilder {
     return this;
   }
 
+  aggregateOpts(opts) {
+    this.opts = opts;
+    return this;
+  }
+
   execute() {
     return new Promise((resolve, reject) => {
       return this.client.withCollection(this.name).then(({ conn, collection }) => {
@@ -71,7 +76,7 @@ class QueryBuilder {
             }
           }
 
-          query = collection.aggregate(aggregations);
+          query = collection.aggregate(aggregations, this.opts || {});
 
           return query.toArray((err, docs) => {
             if (err) { return reject(err); }
