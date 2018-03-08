@@ -1,9 +1,9 @@
-const client = require('mongodb').MongoClient;
 const Promise = require('bluebird');
 const promiseRetry = require('promise-retry');
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
+const connectionHandler = require('./connection-handler')
 
 class Client {
   constructor(url) {
@@ -26,8 +26,9 @@ class Client {
           logger.info('Attempt %s to connect to MongoDB - %s', number, this.url);
         }
 
-        return client.connect(this.url, opts).catch(err => {
+        return connectionHandler.retrieve_connection(this.url, opts).catch(err => {
           logger.error('Error on attempt %s to connect', number, err);
+          connectionHandler.discard_connection();
           retry(err);
         });
       }, retryOptions).then(connection => {
@@ -40,6 +41,7 @@ class Client {
 
   connectionClosed() {
     this.connection = null;
+    connectionHandler.discard_connection();
   }
 
   connect() {
