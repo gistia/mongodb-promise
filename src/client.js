@@ -23,6 +23,14 @@ class Client {
     return Client.instance;
   }
 
+  static close() {
+    if (!Client.instance) {
+      return Promise.resolve();
+    }
+
+    return Client.instance.connection.close();
+  }
+
   init() {
     const opts = {};
     if (process.env.MONGODB_POOL_SIZE) {
