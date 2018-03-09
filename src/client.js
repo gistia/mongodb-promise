@@ -1,13 +1,34 @@
-const client = require('mongodb').MongoClient;
 const Promise = require('bluebird');
 const promiseRetry = require('promise-retry');
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
+const connectionHandler = require('./connection-handler')
 
 class Client {
   constructor(url) {
     this.url = url || process.env.MONGODB_URL;
+  }
+
+  static bootstrap(url) {
+    Client.instance = new Client(url);
+    return Client.instance.init();
+  }
+
+  static get() {
+    if (!Client.instance) {
+      throw new Error('Connection pool is not initialized! please, use Client.boostrap()');
+    }
+
+    return Client.instance;
+  }
+
+  static close() {
+    if (!Client.instance) {
+      return Promise.resolve();
+    }
+
+    return Client.instance.connection.close();
   }
 
   init() {
@@ -26,11 +47,13 @@ class Client {
           logger.info('Attempt %s to connect to MongoDB - %s', number, this.url);
         }
 
-        return client.connect(this.url, opts).catch(err => {
+        return connectionHandler.retrieve_connection(this.url, opts).catch(err => {
           logger.error('Error on attempt %s to connect', number, err);
+          connectionHandler.discard_connection();
           retry(err);
         });
       }, retryOptions).then(connection => {
+        logger.debug('Connection Pool is created');
         this.connection = connection;
         this.connection.on('close', this.connectionClosed.bind(this));
         resolve(connection);
@@ -40,6 +63,7 @@ class Client {
 
   connectionClosed() {
     this.connection = null;
+    connectionHandler.discard_connection();
   }
 
   connect() {
