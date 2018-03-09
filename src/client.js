@@ -10,6 +10,19 @@ class Client {
     this.url = url || process.env.MONGODB_URL;
   }
 
+  static bootstrap(url) {
+    Client.instance = new Client(url);
+    return Client.instance.init();
+  }
+
+  static get() {
+    if (!Client.instance) {
+      throw new Error('Connection pool is not initialized! please, use Client.boostrap()');
+    }
+
+    return Client.instance;
+  }
+
   init() {
     const opts = {};
     if (process.env.MONGODB_POOL_SIZE) {
@@ -32,6 +45,7 @@ class Client {
           retry(err);
         });
       }, retryOptions).then(connection => {
+        logger.debug('Connection Pool is created');
         this.connection = connection;
         this.connection.on('close', this.connectionClosed.bind(this));
         resolve(connection);
