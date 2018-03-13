@@ -42,6 +42,10 @@ class Client {
     this.connection = null;
   }
 
+  disconnect() {
+    this.connection.close();
+  }
+
   connect() {
     if (!this.connection) {
       return this.init();
