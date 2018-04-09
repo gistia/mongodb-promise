@@ -22,7 +22,7 @@ class Store {
     return this.client.update(this.collection, query, json, { upsert: true });
   }
 
-  aggregateWithPagination(aggregations, pagination) {
+  aggregateWithPagination(aggregations, pagination, opts = {}) {
     return new Promise((resolve, reject) => {
       const resultPipe = pagination ? aggregations.concat({
         $skip: pagination.offset }, { $limit: pagination.limit }) : aggregations;
@@ -32,6 +32,7 @@ class Store {
         .client
         .query(this.collection)
         .aggregate(pipe)
+        .aggregateOpts(opts)
         .execute())).then(([rows, countRes]) => {
           const count = countRes.length ? countRes[0].count : 0;
           resolve({ rows, count });
