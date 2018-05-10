@@ -92,10 +92,10 @@ class Client {
     });
   }
 
-  findAndModify(collectionName, query, sort={}, doc, options={}) {
+  findOneAndUpdate(collectionName, query, doc, options={}) {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
-        collection.findAndModify(query, sort, doc, options,
+        collection.findOneAndUpdate(query, doc, options,
           (err, result) => {
             if (err) { return reject(err); }
             resolve(result);
