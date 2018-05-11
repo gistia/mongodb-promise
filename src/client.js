@@ -92,6 +92,19 @@ class Client {
     });
   }
 
+  findOneAndUpdate(collectionName, query, doc, options={}) {
+    return new Promise((resolve, reject) => {
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.findOneAndUpdate(query, doc, options,
+          (err, result) => {
+            if (err) { return reject(err); }
+            resolve(result);
+          }
+        );
+      }, reject).catch(reject);
+    });
+  }
+
   insert(collectionName, doc) {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
