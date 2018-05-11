@@ -58,6 +58,17 @@ class TestHelper {
       }).catch(reject);
     });
   }
+
+  eraseData(data=[]) {
+    return new Promise((resolve, reject) => {
+      this.client.init().then(db => {
+        db.collection(this.collectionName).deleteMany({ _id: { $in: data.map(_ => _._id) }}, () => {
+          db.close();
+          resolve();
+        }, reject)
+      }, reject).catch(reject);;
+    });
+  }
 }
 
 module.exports = TestHelper;
