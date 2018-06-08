@@ -22,6 +22,15 @@ class Store {
     return this.client.update(this.collection, query, json, { upsert: true });
   }
 
+  aggregate(aggregations) {
+    return this
+      .client
+      .query(this.collection)
+      .aggregate(aggregations)
+      .aggregateOpts(opts)
+      .execute();
+  }
+
   aggregateWithPagination(aggregations, pagination, opts = {}) {
     return new Promise((resolve, reject) => {
       const resultPipe = pagination ? aggregations.concat({
