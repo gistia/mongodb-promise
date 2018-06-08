@@ -22,7 +22,7 @@ class Store {
     return this.client.update(this.collection, query, json, { upsert: true });
   }
 
-  aggregate(aggregations) {
+  aggregate(aggregations, opts = {}) {
     return this
       .client
       .query(this.collection)
