@@ -105,10 +105,21 @@ class Client {
     });
   }
 
+  insertMany(collectionName, docs) {
+    return new Promise((resolve, reject) => {
+      this.withCollection(collectionName).then(({ conn, collection }) => {
+        collection.insertMany(docs, (err, result) => {
+          if (err) { return reject(err); }
+          resolve(result);
+        });
+      }, reject).catch(reject);
+    });
+  }
+
   insert(collectionName, doc) {
     return new Promise((resolve, reject) => {
       this.withCollection(collectionName).then(({ conn, collection }) => {
-        collection.insert(doc, (err, result) => {
+        collection.insertOne(doc, (err, result) => {
           if (err) { return reject(err); }
           resolve(result);
         });
