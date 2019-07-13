@@ -1,23 +1,24 @@
 const client = require('mongodb').MongoClient;
 const Promise = require('bluebird');
 const promiseRetry = require('promise-retry');
+const _ = require('lodash');
 
 const QueryBuilder = require('./query-builder');
 const { fixId } = require('./utils');
 
 class Client {
-  constructor(url) {
+  constructor(url, opts = {}) {
     this.url = url || process.env.MONGODB_URL;
+    this.opts = Object.assign({ retries: 10 }, opts)
   }
 
   init() {
-    const opts = {};
     if (process.env.MONGODB_POOL_SIZE) {
-      opts.poolSize = parseInt(process.env.MONGODB_POOL_SIZE, 10);
+      this.opts.poolSize = parseInt(process.env.MONGODB_POOL_SIZE, 10);
     }
 
     const retryOptions = {
-      retries: process.env.MONGODB_MAX_RETRIES || 10,
+      retries: process.env.MONGODB_MAX_RETRIES || this.opts.retries,
     };
 
     return new Promise((resolve, reject) => {
@@ -26,7 +27,7 @@ class Client {
           logger.info('Attempt %s to connect to MongoDB - %s', number, this.url);
         }
 
-        return client.connect(this.url, opts).catch(err => {
+        return client.connect(this.url, _.omit(this.opts, ['retries'])).catch(err => {
           logger.error('Error on attempt %s to connect', number, err);
           retry(err);
         });
@@ -43,7 +44,7 @@ class Client {
   }
 
   disconnect() {
-    this.connection.close();
+    this.connection && this.connection.close();
   }
 
   connect() {
