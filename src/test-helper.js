@@ -23,51 +23,27 @@ class TestHelper {
       return doc;
     })
 
-    return new Promise((resolve, reject) => {
-      this.init().then(_ => {
-        this.client.withCollection(this.collectionName).then((collection) => {
-          collection.insert(data, (err, doc) => {
-            if (err) { return reject(err); }
-            resolve(doc);
-          });
-        }).catch(reject);
-      }).catch(reject);
-    });
+    return this.init()
+      .then(() => this.client.withCollection(this.collectionName))
+      .then(({ collection }) => collection.insert(data));
   }
 
   retrieveData() {
-    return new Promise((resolve, reject) => {
-      this.client.init().then(_ => {
-        this.client.withCollection(this.collectionName).then((collection) => {
-          collection.find({}).toArray((err, docs) => {
-            if (err) { return reject(err); }
-            resolve(docs);
-          });
-        }, reject).catch(reject);
-      });
-    });
+    return this.init()
+      .then(() => this.client.withCollection(this.collectionName))
+      .then(({ collection }) => collection.find({}).toArray());
   }
 
   eraseCollection() {
-    return new Promise((resolve, reject) => {
-      this.client.init().then(db => {
-        db.collection(this.collectionName).deleteMany().then(_ => {
-          this.client.disconnect();
-          resolve();
-        });
-      }).catch(reject);
-    });
+    return this.init()
+      .then((db) => db.collection(this.collectionName).deleteMany())
+      .then(() => this.client.disconnect());
   }
 
   eraseData(data=[]) {
-    return new Promise((resolve, reject) => {
-      this.client.init().then(db => {
-        db.collection(this.collectionName).deleteMany({ _id: { $in: data.map(_ => _._id) }}, () => {
-          this.client.disconnect();
-          resolve();
-        }, reject)
-      }, reject).catch(reject);;
-    });
+    return this.init()
+      .then((db) => db.collection(this.collectionName).deleteMany({ _id: { $in: data.map(_ => _._id) } }))
+      .then(() => this.client.disconnect());
   }
 }
 

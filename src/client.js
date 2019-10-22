@@ -64,31 +64,31 @@ class Client {
   }
 
   withCollection(name) {
-    return this.connect().then((conn) => this.collection(conn, name));
+    return this.connect().then((conn) => this.collection(conn, name)).then((collection) => ({ collection }));
   }
 
   update(collectionName, filter, update, options = {}) {
-    return this.withCollection(collectionName).then((collection) => collection.update(fixId(filter), update, options));
+    return this.withCollection(collectionName).then(({ collection }) => collection.update(fixId(filter), update, options));
   }
 
   findOneAndUpdate(collectionName, query, doc, options = {}) {
-    return this.withCollection(collectionName).then((collection) => collection.findOneAndUpdate(query, doc, options));
+    return this.withCollection(collectionName).then(({ collection }) => collection.findOneAndUpdate(query, doc, options));
   }
 
   insertMany(collectionName, docs) {
-    return this.withCollection(collectionName).then((collection) => collection.insertMany(docs));
+    return this.withCollection(collectionName).then(({ collection }) => collection.insertMany(docs));
   }
 
   insert(collectionName, doc) {
-    return this.withCollection(collectionName).then((collection) => collection.insertOne(doc));
+    return this.withCollection(collectionName).then(({ collection }) => collection.insertOne(doc));
   }
 
   remove(collectionName, filter) {
-    return this.withCollection(collectionName).then((collection) => collection.deleteMany(filter));
+    return this.withCollection(collectionName).then(({ collection }) => collection.deleteMany(filter));
   }
 
   mapReduce(collectionName, map, reduce, filter, collectionOut) {
-    return this.withCollection(collectionName).then((collection) =>
+    return this.withCollection(collectionName).then(({ collection }) =>
       collection.mapReduce(map, reduce, { query: filter, out: collectionOut })
     );
   }

@@ -49,7 +49,7 @@ class QueryBuilder {
   }
 
   execute() {
-      return this.client.withCollection(this.name).then((collection) => {
+      return this.client.withCollection(this.name).then(({ collection }) => {
         let query;
 
         if (this.aggregations) {
