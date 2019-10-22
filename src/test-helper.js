@@ -25,7 +25,7 @@ class TestHelper {
 
     return new Promise((resolve, reject) => {
       this.init().then(_ => {
-        this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
+        this.client.withCollection(this.collectionName).then((collection) => {
           collection.insert(data, (err, doc) => {
             if (err) { return reject(err); }
             resolve(doc);
@@ -38,7 +38,7 @@ class TestHelper {
   retrieveData() {
     return new Promise((resolve, reject) => {
       this.client.init().then(_ => {
-        this.client.withCollection(this.collectionName).then(({ conn, collection }) => {
+        this.client.withCollection(this.collectionName).then((collection) => {
           collection.find({}).toArray((err, docs) => {
             if (err) { return reject(err); }
             resolve(docs);
@@ -51,8 +51,8 @@ class TestHelper {
   eraseCollection() {
     return new Promise((resolve, reject) => {
       this.client.init().then(db => {
-        db.collection(this.collectionName).remove().then(_ => {
-          db.close();
+        db.collection(this.collectionName).deleteMany().then(_ => {
+          this.client.disconnect();
           resolve();
         });
       }).catch(reject);
@@ -63,7 +63,7 @@ class TestHelper {
     return new Promise((resolve, reject) => {
       this.client.init().then(db => {
         db.collection(this.collectionName).deleteMany({ _id: { $in: data.map(_ => _._id) }}, () => {
-          db.close();
+          this.client.disconnect();
           resolve();
         }, reject)
       }, reject).catch(reject);;

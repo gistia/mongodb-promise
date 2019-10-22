@@ -48,7 +48,7 @@ class Client {
   }
 
   disconnect() {
-    this.connection && this.connection.close();
+    this.client && this.client.close();
   }
 
   connect() {
