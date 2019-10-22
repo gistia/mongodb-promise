@@ -49,8 +49,7 @@ class QueryBuilder {
   }
 
   execute() {
-    return new Promise((resolve, reject) => {
-      return this.client.withCollection(this.name).then(({ conn, collection }) => {
+      return this.client.withCollection(this.name).then((collection) => {
         let query;
 
         if (this.aggregations) {
@@ -78,13 +77,11 @@ class QueryBuilder {
 
           query = collection.aggregate(aggregations, this.opts || {});
 
-          return query.toArray((err, docs) => {
-            if (err) { return reject(err); }
+          return query.toArray().then((docs) => {
             if (this.hasCount) {
-              const count = docs.length ? docs[0].count : 0;
-              resolve(count);
+              return docs.length ? docs[0].count : 0;
             }
-            resolve(docs);
+            return docs;
           });
         } else {
           query = collection;
@@ -117,13 +114,9 @@ class QueryBuilder {
 
           const method = this.hasCount ? query.count.bind(query) : query.toArray.bind(query);
 
-          method((err, docs) => {
-            if (err) { return reject(err); }
-            resolve(docs);
-          });
+          return method();
         }
-      }, reject).catch(reject);
-    });
+      });
   }
 }
 
