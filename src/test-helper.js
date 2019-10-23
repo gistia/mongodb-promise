@@ -25,7 +25,7 @@ class TestHelper {
 
     return this.init()
       .then(() => this.client.withCollection(this.collectionName))
-      .then(({ collection }) => collection.insert(data));
+      .then(({ collection }) => Array.isArray(data) ? collection.insertMany(data) : collection.insertOne(data));
   }
 
   retrieveData() {
