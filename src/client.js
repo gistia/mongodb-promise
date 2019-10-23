@@ -9,7 +9,7 @@ const { fixId } = require('./utils');
 class Client {
   constructor(url, opts = {}) {
     this.url = url || process.env.MONGODB_URL;
-    this.opts = Object.assign({ retries: 10 }, opts);
+    this.opts = Object.assign({ retries: 10, useUnifiedTopology: true }, opts);
   }
 
   init() {
