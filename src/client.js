@@ -68,12 +68,7 @@ class Client {
   }
 
   update(collectionName, filter, update, options = {}) {
-    return this.withCollection(collectionName)
-      .then(({ collection }) => {
-        return Array.isArray(update) 
-          ? collection.updateMany(fixId(filter), update, options) 
-          : collection.updateOne(fixId(filter), update, options);
-      });
+    return this.withCollection(collectionName).then(({ collection }) => collection.update(fixId(filter), update, options));
   }
 
   findOneAndUpdate(collectionName, query, doc, options = {}) {
