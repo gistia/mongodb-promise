@@ -75,6 +75,10 @@ class Client {
     return this.withCollection(collectionName).then(({ collection }) => collection.findOneAndUpdate(query, doc, options));
   }
 
+  findOneAndReplace(collectionName, query, doc, options = {}) {
+    return this.withCollection(collectionName).then(({ collection }) => collection.findOneAndReplace(query, doc, options));
+  }
+
   insertMany(collectionName, docs) {
     return this.withCollection(collectionName).then(({ collection }) => collection.insertMany(docs));
   }
