@@ -13,6 +13,10 @@ class Client {
   }
 
   init() {
+    if ( this.connection ) {
+      return Promise.resolve(this.connection)
+    }
+
     if (process.env.MONGODB_POOL_SIZE) {
       this.opts.poolSize = parseInt(process.env.MONGODB_POOL_SIZE, 10);
     }
@@ -27,15 +31,13 @@ class Client {
       }
 
       return mongoClient
-        .connect(
-          this.url,
-          _.omit(this.opts, ['retries'])
-        )
+        .connect( this.url, _.omit(this.opts, ['retries']))
         .catch((err) => {
           logger.error('Error on attempt %s to connect', number, err);
-          retry(err);
+          return retry(err);
         });
-    }, retryOptions).then((conClient) => {
+    }, retryOptions)
+    .then((conClient) => {
       this.client = conClient;
       this.connection = conClient.db();
       this.connection.on('close', this.connectionClosed.bind(this));
@@ -45,6 +47,7 @@ class Client {
 
   connectionClosed() {
     this.connection = null;
+    this.client = null;
   }
 
   disconnect() {
