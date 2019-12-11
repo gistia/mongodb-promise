@@ -40,7 +40,7 @@ class Client {
     .then((conClient) => {
       this.client = conClient;
       this.connection = conClient.db();
-      this.connection.on('close', this.connectionClosed.bind(this));
+      this.client.on('close', this.connectionClosed.bind(this));
       return this.connection;
     });
   }
@@ -51,7 +51,9 @@ class Client {
   }
 
   disconnect() {
-    this.client && this.client.close();
+    return Promise.resolve(() => {
+      this.client && this.client.close().then(() => this.connectionClosed());
+    });
   }
 
   connect() {
