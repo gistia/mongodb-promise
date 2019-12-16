@@ -51,7 +51,9 @@ class Client {
   }
 
   disconnect() {
-    this.client && this.client.close();
+    return Promise.resolve(() => {
+      this.client && this.client.close().then(() => this.connectionClosed());
+    });
   }
 
   connect() {
