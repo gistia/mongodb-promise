@@ -21,7 +21,7 @@
     "karma-sinon": "1.0.5",
     "mocha": "3.2.0",
     "nodemon": "1.11.0",
-    "sinon": "1.17.7"
+    "sinon": "8.1.0"
   },
   "dependencies": {
     "bluebird": "3.7.1",
