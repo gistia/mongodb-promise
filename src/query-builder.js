@@ -90,7 +90,6 @@ class QueryBuilder {
               try {
                 this.findQuery._id = new ObjectID(this.findQuery._id);
               } catch (e) {
-                console.warn(`Error converting ${this.findQuery._id} to ObjectID`);
               }
             }
             query = query.find(this.findQuery);
